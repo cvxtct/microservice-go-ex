@@ -5,3 +5,6 @@ microservice-01.code-workspace
 brokerApp
 frontApp
 authApp
+
+# DB
+/db-data

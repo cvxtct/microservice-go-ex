@@ -7,4 +7,4 @@ frontApp
 authApp
 
 # DB
-/db-data
+./project/db-data

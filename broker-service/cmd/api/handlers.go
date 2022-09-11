@@ -7,15 +7,14 @@ import (
 	"net/http"
 )
 
-type RequestPayload struct{
-	Action string `json:"action"`
-	Auth AuthPayload  `json:"auth,omitempty"`
+type RequestPayload struct {
+	Action string      `json:"action"`
+	Auth   AuthPayload `json:"auth,omitempty"`
 }
 
 type AuthPayload struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
-
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +31,7 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	// w.Write(out)
 }
 
-func (app *Config) HandleSubmission(w http.ResponseWriter, *http.Request) {
+func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	var requestPayload RequestPayload
 
 	err := app.readJSON(w, r, &requestPayload)
@@ -82,7 +81,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	var jsonFromService jsonResponse
 
 	// decode the json from auth service
-	arr = json.NewDecoder(response.Body).Decode(&jsonFromService)
+	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

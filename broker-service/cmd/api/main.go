@@ -1,5 +1,7 @@
 package main
 
+// Broker is the single point of entry
+
 import (
 	"fmt"
 	"log"

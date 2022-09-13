@@ -6,6 +6,12 @@
 
 ### Packages
 
+http
+go get github.com/go-chi/chi/v5
+go get github.com/go-chi/chi/middleware
+go get github.com/go-chi/cors          
+
+mongo
 go get go.mongodb.org/mongo-driver/mongo
 go get go.mongodb.org/mongo-driver/mongo/options
 

@@ -58,7 +58,7 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 	collection := client.Database("logs").Collection("logs")
 
 	opts := options.Find()
-	opts.SetSort(bson.D{{"created_at, -1"}})
+	opts.SetSort(bson.D{{"created_at", -1}})
 
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {

@@ -41,7 +41,7 @@
     let sent = document.getElementById("payload");
     let recevied = document.getElementById("received");
 
-    logBtn.addEventListener("clicks", function(){
+    logBtn.addEventListener("click", function() {
         const payload = {
             action: "log",
             log: {
@@ -54,11 +54,11 @@
         headers.append("Content-Type", "application/json");
 
         const body = {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify(payload),
             headers: headers,
         }
-        // TODO move to function
+
         fetch("http:\/\/localhost:8080/handle", body)
         .then((response) => response.json())
         .then((data) => {
@@ -71,8 +71,8 @@
             }
         })
         .catch((error) => {
-            output.innerH
-
+            output.innerHTML += "<br><br>Eror: " + error;
+        })        
     })
 
     authBrokerBtn.addEventListener("click", function() {
@@ -81,7 +81,7 @@
             action: "auth",
             auth: {
                 email: "admin@example.com",
-                password: "verysecret!",
+                password: "verysecret",
             }
         }
 

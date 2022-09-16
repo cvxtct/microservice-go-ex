@@ -2,10 +2,11 @@
 microservice-01.code-workspace
 
 # BINARY
-brokerApp
-frontApp
-authApp
-loggerServiceApp
+broker-service/brokerApp
+front-end/frontApp
+authentication-service/authApp
+logger-service/loggerServiceApp
 
 # DB
 project/db-data/*
+

@@ -5,6 +5,7 @@ microservice-01.code-workspace
 brokerApp
 frontApp
 authApp
+loggerServiceApp
 
 # DB
 project/db-data/*

@@ -13,6 +13,10 @@ type jsonResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
+// http.ResponseWrite to coonstruct http response
+// A Request represents an HTTP request received by a server
+// or to be sent by a client.
+
 func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // 1 Mb
 

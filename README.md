@@ -15,6 +15,10 @@ mongo
 go get go.mongodb.org/mongo-driver/mongo
 go get go.mongodb.org/mongo-driver/mongo/options
 
+mail
+go get github.com/xhit/go-simple-mail/v2
+go get github.com/vanng822/go-premailer/premailer
+
 ### Toolbox
 
 [A simple example of how to create a reusable Go module with commonly used tools.](https://github.com/tsawler/toolbox)

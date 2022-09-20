@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   broker-service:
     build:
       context: ./../broker-service
@@ -11,7 +12,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-  
+
   logger-service:
     build:
       context: ./../logger-service
@@ -20,6 +21,24 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+
+  mailer-service:
+    build:
+      context: ./../mail-service
+      dockerfile: ./../mail-service/mail-service.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: none
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      FROM_NAME: "John Smith"
+      FROM_ADDRESS: john.smith@example.com
 
   authentication-service:
     build:
@@ -34,8 +53,9 @@ services:
     environment:
       DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
 
+
   postgres:
-    image: 'postgres:14.2'
+    image: 'postgres:14.0'
     ports:
       - "5432:5432"
     restart: always
@@ -65,5 +85,5 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
-    
-
+      
+      

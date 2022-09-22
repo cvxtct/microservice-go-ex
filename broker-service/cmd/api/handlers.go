@@ -163,10 +163,10 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 }
 
 func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
-	jsonData, _ := json.MarshalIndent(msg, "\t")
+	jsonData, _ := json.MarshalIndent(msg, "", "\t")
 
 	// call the mailer service
-	mailServiceUrl := "http://mail-service/send"
+	mailServiceUrl := "http://mailer-service/send"
 
 	// post to mail service
 	request, err := http.NewRequest("POST", mailServiceUrl, bytes.NewBuffer(jsonData))

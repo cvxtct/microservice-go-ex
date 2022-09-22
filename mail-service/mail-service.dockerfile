@@ -21,5 +21,6 @@ RUN mkdir /app
 # With this the make build_up will copy the brokerApp binary into the docker instead to recompile it within
 # the container again.
 COPY mailApp /app
+COPY templates /templates
 
 CMD ["/app/mailApp"]

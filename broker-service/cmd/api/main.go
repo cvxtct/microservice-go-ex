@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -26,10 +27,10 @@ func main() {
 		log.Println(err)
 		os.Exit(1)
 	}
-	defer rabbitConnect.Close()
+	defer rabbitConn.Close()
 
 	app := Config{
-		Rabbit: : rabbrabbitConn,
+		Rabbit: rabbitConn,
 	}
 
 	log.Printf("Starting broker service on port %s\n", webPort)
@@ -41,7 +42,7 @@ func main() {
 	}
 
 	// start the server
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic(err)
 	}

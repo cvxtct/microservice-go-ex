@@ -1,6 +1,7 @@
 package main
 
 import (
+	"broker/event"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -38,11 +39,11 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// log hit the broker
-	err := app.logRequest("broker", payload.Message)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
+	// err := app.logRequest("broker", payload.Message)
+	// if err != nil {
+	// 	app.errorJSON(w, err)
+	// 	return
+	// }
 
 	_ = app.writeJSON(w, http.StatusOK, payload)
 
@@ -66,7 +67,11 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logItem(w, requestPayload.Log)
+		// log via calling the logger service
+		// app.logItem(w, requestPayload.Log)
+		// log via calling the RabbitMQ listener service
+		// which then will call the logger-service
+		app.logeventViaRabbit(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
 	default:
@@ -75,41 +80,41 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 }
 
 // This will be not in use anymore, stay here for reference
-func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
-	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+// func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
+// 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
-	logServiceURL := "http://logger-service/log"
+// 	logServiceURL := "http://logger-service/log"
 
-	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
+// 	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+// 	if err != nil {
+// 		app.errorJSON(w, err)
+// 		return
+// 	}
 
-	request.Header.Set("Content-Type", "application/json")
+// 	request.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
+// 	client := &http.Client{}
 
-	response, err := client.Do(request)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
+// 	response, err := client.Do(request)
+// 	if err != nil {
+// 		app.errorJSON(w, err)
+// 		return
+// 	}
 
-	defer response.Body.Close()
+// 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusAccepted {
-		app.errorJSON(w, err)
-		return
-	}
+// 	if response.StatusCode != http.StatusAccepted {
+// 		app.errorJSON(w, err)
+// 		return
+// 	}
 
-	var payload jsonResponse
+// 	var payload jsonResponse
 
-	payload.Error = false
-	payload.Message = "logged"
+// 	payload.Error = false
+// 	payload.Message = "logged"
 
-	app.writeJSON(w, http.StatusAccepted, payload)
-}
+// 	app.writeJSON(w, http.StatusAccepted, payload)
+// }
 
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	// create some json we'll send to the auth microservice
@@ -200,27 +205,34 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
-// In order to be able to send a log request for the logger service
-// Not part of the broker handler
-func (app *Config) logRequest(name, data string) error {
-	var entry struct {
-		Name string `json:"name"`
-		Data string `json:"data"`
+func (app *Config) logeventViaRabbit(w http.ResponseWriter, l LogPayload) {
+	err := app.pushToQueue(l.Name, l.Data)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
 	}
 
-	entry.Name = name
-	entry.Data = data
+	var payload jsonResponse
+	payload.Error = false
+	payload.Message = "logged via RabbitMQ"
 
-	jsonData, _ := json.MarshalIndent(entry, "", "\t")
-	logServiceURL := "http://logger-service/log"
+	app.writeJSON(w, http.StatusAccepted, payload)
+}
 
-	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+func (app *Config) pushToQueue(name, msg string) error {
+	emitter, err := event.NewEventEmitter(app.Rabbit)
 	if err != nil {
 		return err
 	}
 
-	client := http.Client{}
-	_, err = client.Do(request)
+	payload := LogPayload{
+		Name: name,
+		Data: msg,
+	}
+
+	// MarshalIndent no needed in production -> Marshal
+	j, _ := json.MarshalIndent(&payload, "", "\t")
+	err = emitter.Push(string(j), "log.INFO")
 	if err != nil {
 		return err
 	}
@@ -228,3 +240,33 @@ func (app *Config) logRequest(name, data string) error {
 	return nil
 
 }
+
+// In order to be able to send a log request for the logger service
+// Not part of the broker handler
+
+// func (app *Config) logRequest(name, data string) error {
+// 	var entry struct {
+// 		Name string `json:"name"`
+// 		Data string `json:"data"`
+// 	}
+
+// 	entry.Name = name
+// 	entry.Data = data
+
+// 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+// 	logServiceURL := "http://logger-service/log"
+
+// 	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	client := http.Client{}
+// 	_, err = client.Do(request)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+
+// }

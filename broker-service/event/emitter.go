@@ -32,6 +32,7 @@ func (e *Emitter) Push(event string, severity string) error {
 
 	err = channel.Publish(
 		"logs_topic",
+		severity,
 		false,
 		false,
 		amqp.Publishing{
@@ -39,6 +40,7 @@ func (e *Emitter) Push(event string, severity string) error {
 			Body:        []byte(event),
 		},
 	)
+
 	if err != nil {
 		return err
 	}

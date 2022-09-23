@@ -6,6 +6,8 @@ microservice-01.code-workspace
 **/frontApp
 **/authApp
 **/loggerServiceApp
+**/mailApp
+**/listenerApp
 
 # DB
 project/db-data/*

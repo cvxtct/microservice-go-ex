@@ -61,6 +61,16 @@ func (app *Config) logRequest(name, data string) error {
 	entry.Data = data
 
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+	// in this case, the broker is not in the game
+	// in order to achieve, the entry struct must be modified like:
+	// {
+	// 	action: "log",
+	// 	log: {
+	// 		name: "event",
+	// 		data: "Some kind of data",
+	// 	}
+	// }
+	// Question: which way is the standard
 	logServiceURL := "http://logger-service/log"
 
 	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))

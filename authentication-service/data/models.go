@@ -45,13 +45,15 @@ type User struct {
 
 // GetAll returns a slice of all users, sorted by last name
 func (u *User) GetAll() ([]*User, error) {
+	// context is for maintain connections, like in this case, during db connection, to avoid
+	// long running database request -> terminate after timeout
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
 	query := `select id, email, first_name, last_name, password, user_active, created_at, updated_at
 	from users order by last_name`
 
-	rows, err := db.QueryContext(ctx, query)
+	rows, err := db.QueryContext(ctx, query) // context passed to the querry
 	if err != nil {
 		return nil, err
 	}

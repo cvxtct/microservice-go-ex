@@ -2,6 +2,11 @@
 
 [Working with microservices Go](https://www.udemy.com/course/working-with-microservices-in-go/)
 
+- Easy to maintain / extend
+- Robust
+- Horisontal scaling
+- Harder to write (each service is individual)
+
 ## Resources
 
 ### Packages
@@ -158,7 +163,16 @@ In this case the frontend creates the following:
 
 Initially this request was sent as the aboves using http. Broker service receive it the broker's router routes it to the handleSubmission then it exctracts the action from the request which is in case "log" based on this the case will fire the logItem method which marshals the payload then creates the request for the log-service and send it to and writes back the log-service response for the frontend. Errors are handled at the same spots and way. 
 
-The log-service also has a data
+At a certain point the RabbitMQ AMQP (Advanced Message Queue Protocol) was introduced to speed up communication and make it more conveninet. RabbitMQ runs in container, the listener-service implements the communication with this queue. 
+
+The broker-service being extended with:
+- events, consumer (not all methond in use), emitter
+- the main.go connects to the RabbitMQ, Config struct maintains the connection
+- handler.go got logeventViaRabbit and pushToQueue methods 
+- more simple, the fields are placed into the queue, a response back to the frontend that the action has been done
+- pushToQueue creates a NeweventEmitter, then the emitter pushes the payload to the queue's (it is a topic or channel)
 
 
-At a certain point the RabbitMQ AMQP (Advanced Message Queue Protocol) was introduced to speed up communication and make it more conveninet. This service is a standalone
+The emitter within the broker-service:
+- Setup() to set up connection and returns declareExchange
+- NewEventEmitter() using the Setup() and returns the emitter

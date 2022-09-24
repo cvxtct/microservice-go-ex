@@ -166,13 +166,14 @@ Initially this request was sent as the aboves using http. Broker service receive
 At a certain point the RabbitMQ AMQP (Advanced Message Queue Protocol) was introduced to speed up communication and make it more conveninet. RabbitMQ runs in container, the listener-service implements the communication with this queue. 
 
 The broker-service being extended with:
-- events, consumer (not all methond in use), emitter
+- events, consumer (not needed (yet at this point) despite the instructor replicated this file), emitter
 - the main.go connects to the RabbitMQ, Config struct maintains the connection
 - handler.go got logeventViaRabbit and pushToQueue methods 
 - more simple, the fields are placed into the queue, a response back to the frontend that the action has been done
-- pushToQueue creates a NeweventEmitter, then the emitter pushes the payload to the queue's (it is a topic or channel)
+- pushToQueue creates a NeweventEmitter, then the emitter pushes the payload to the queue's (to the channel)
 
 
 The emitter within the broker-service:
-- Setup() to set up connection and returns declareExchange
+- Setup() to set up connection and returns declareExchange, this is the reason why the events.go is needed.
 - NewEventEmitter() using the Setup() and returns the emitter
+- 

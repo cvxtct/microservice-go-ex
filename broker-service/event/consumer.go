@@ -1,5 +1,7 @@
 package event
 
+// Within broker-service the Consumer is not in use at all
+
 import (
 	"bytes"
 	"encoding/json"

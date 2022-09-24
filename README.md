@@ -156,7 +156,9 @@ In this case the frontend creates the following:
         }
 ```
 
-Initially this request was sent as the aboves. Broker server receive it
+Initially this request was sent as the aboves using http. Broker service receive it the broker's router routes it to the handleSubmission then it exctracts the action from the request which is in case "log" based on this the case will fire the logItem method which marshals the payload then creates the request for the log-service and send it to and writes back the log-service response for the frontend. Errors are handled at the same spots and way. 
+
+The log-service also has a data
 
 
- 
+At a certain point the RabbitMQ AMQP (Advanced Message Queue Protocol) was introduced to speed up communication and make it more conveninet. This service is a standalone

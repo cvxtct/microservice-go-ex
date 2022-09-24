@@ -70,7 +70,6 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		// log via calling the logger service
 		// app.logItem(w, requestPayload.Log)
 		// log via calling the RabbitMQ listener service
-		// which then will call the logger-service
 		app.logeventViaRabbit(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)

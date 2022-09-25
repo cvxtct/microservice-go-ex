@@ -31,6 +31,12 @@ go get github.com/rabbitmq/amqp091-go
 
 [A simple example of how to create a reusable Go module with commonly used tools.](https://github.com/tsawler/toolbox)
 
+## Infrastructure
+
+### Phase one
+
+Each service run in docker container. Each service has a dockerfile to define image, the application directory and copy the binary to the work folder and a launch command. The build itself done by Makefile, then one docker-compuse.yml defines the services.
+
 
 ## Describing cases
 
@@ -176,4 +182,17 @@ The broker-service being extended with:
 The emitter within the broker-service:
 - Setup() to set up connection and returns declareExchange, this is the reason why the events.go is needed.
 - NewEventEmitter() using the Setup() and returns the emitter
-- 
+
+The listener-service listens and consumes each message from the channel. It creates a NewConsumer which has the listen method. 
+The listen mechanism itself stands for the following steps:
+- connects to the channel, if err return with
+- defer channel
+- declare random queue 
+- we have one topic currently, however if there is more, a for loop pick and bind each channel to each topic
+- initiate the message read from the channel
+- creates a Go channel for the Go routine
+- in Go routine a for loop starts in range of messages copy it into the Payload stuct, then another Go routine calls the handlePayload -> with this approach the listnere will be as fast as possible.
+
+The handlePayload decides which event should call (using a switch case), in our case the topic is log_event -> logEvent() being called the log-service will be called. The rest is a usual service call. 
+
+    We can have as many cases as we want as long as we create the logic to handle them...

@@ -85,6 +85,8 @@ func (consumer *Consumer) Listen(topics []string) error {
 		for d := range messages {
 			var payload Payload
 			_ = json.Unmarshal(d.Body, &payload)
+			// TODO
+			log.Println("To channel: ", q.Name, "With payload: ", payload)
 			// fire a new go routine to make things faster
 			go handlePayload(payload)
 		}

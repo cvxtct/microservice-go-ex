@@ -39,9 +39,13 @@ func main() {
 
 	// create a context in order to disconnect
 	ctx, cancle := context.WithTimeout(context.Background(), 15*time.Second)
+	// Defer pushes the function call onto a list, the list of saved calls will be executed
+	// after the surrounding function returns.
+	// in this case after program executin, since this is the main function
 	defer cancle()
 
 	// close connection
+	// this defer act as the same it just has it's own function definition
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)

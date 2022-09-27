@@ -206,3 +206,14 @@ The handlePayload decides which event should call (using a switch case), in our 
 rpc.go added to the logger-service's main package with RPCServer and RPCPayload structs. 
 
 LogInfo method is for putting the log message into mongo and send back an answer for the caler.
+
+Still needs to run the RPC server and to achieve it within the main.go the followings are placed:
+- rpcListen() method:
+    - net.listen -> protocol, port
+    - check for error
+    - defer listen
+    - infinite loop to listen and accept and serve connection within a go routine
+
+- within main():
+    - register the RPC server
+    - listen in go routine

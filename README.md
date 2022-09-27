@@ -196,3 +196,13 @@ The listen mechanism itself stands for the following steps:
 The handlePayload decides which event should call (using a switch case), in our case the topic is log_event -> logEvent() being called the log-service will be called. The rest is a usual service call. 
 
     We can have as many cases as we want as long as we create the logic to handle them...
+
+### **Case 4 - On frontend push "Test Mail" button** 
+
+# TODO
+
+### Adding RPC to the logger-service
+
+rpc.go added to the logger-service's main package with RPCServer and RPCPayload structs. 
+
+LogInfo method is for putting the log message into mongo and send back an answer for the caler.

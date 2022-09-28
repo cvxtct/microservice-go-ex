@@ -217,3 +217,11 @@ Still needs to run the RPC server and to achieve it within the main.go the follo
 - within main():
     - register the RPC server
     - listen in go routine
+
+**-> Try out in rpc.go from line 37 - 53 : use data models method <-**
+
+In broker-service, the handlers.go:
+- got an RPCPayload struct which then will be populated with the LogPayload comming from the service that want's to log
+- logItemViaRPC() method
+- create client dialing the logger service on 5001 where the logger-service's rpc server is listen and serve
+- call with the client -> RPCServer.LogInfo remote method

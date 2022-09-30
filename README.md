@@ -39,6 +39,9 @@ go get github.com/rabbitmq/amqp091-go
 
 Each service run in docker container. Each service has a dockerfile to define image, the application directory and copy the binary to the work folder and a launch command. The build itself done by Makefile, then one docker-compuse.yml defines the services.
 
+## Architecture
+
+![bla](https://raw.githubusercontent.com/netlounge/microservice-go-ex/main/project/architecture-http-rabbitmq.drawio.png?token=GHSAT0AAAAAABX2RHUHMPMKYFGNVOIE7FZSYZWUT5Q)
 
 ## Describing cases
 

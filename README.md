@@ -2,6 +2,8 @@
 
 [Working with microservices Go](https://www.udemy.com/course/working-with-microservices-in-go/)
 
+    Remark: these notes are for practicing. Not all parts may being described.
+
 - Easy to maintain / extend
 - Robust
 - Horisontal scaling
@@ -40,7 +42,6 @@ Each service run in docker container. Each service has a dockerfile to define im
 
 ## Describing cases
 
-    Note: these are my own notes for practicing, not all parts may being described 
 
 ### HTTP + POSTGRES + MONGO + RABBITMQ
 
@@ -225,3 +226,6 @@ In broker-service, the handlers.go:
 - logItemViaRPC() method
 - create client dialing the logger service on 5001 where the logger-service's rpc server is listen and serve
 - call with the client -> RPCServer.LogInfo remote method
+
+
+### Adding gRPC to the logger-service

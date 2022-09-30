@@ -39,7 +39,7 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 		Message: "Hit the broker",
 	}
 
-	// log hit the broker
+	// log hit the broker http
 	// err := app.logRequest("broker", payload.Message)
 	// if err != nil {
 	// 	app.errorJSON(w, err)
@@ -260,10 +260,13 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 		return
 	}
 
-	rpcPayload := RPCPayload{
-		Name: l.Name,
-		Data: l.Data,
-	}
+	// should convert l (type LogPayload) to RPCPayload instead of using struct literal
+	// (S1016)go-staticcheck
+	// rpcPayload := RPCPayload{
+	// 	Name: l.Name,
+	// 	Data: l.Data,
+	// }
+	rpcPayload := RPCPayload(l)
 
 	var result string
 	// the rpc method what we are going to call

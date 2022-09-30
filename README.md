@@ -41,12 +41,10 @@ Each service run in docker container. Each service has a dockerfile to define im
 
 ## Architecture
 
-![bla](https://raw.githubusercontent.com/netlounge/microservice-go-ex/main/project/architecture-http-rabbitmq.drawio.png?token=GHSAT0AAAAAABX2RHUHMPMKYFGNVOIE7FZSYZWUT5Q)
+![go microservice](https://raw.githubusercontent.com/netlounge/microservice-go-ex/main/project/architecture-http-rabbitmq.drawio.png?token=GHSAT0AAAAAABX2RHUH4OZHDEULAU3QHECQYZWUW7A)
 
 ## Describing cases
 
-
-### HTTP + POSTGRES + MONGO + RABBITMQ
 
 #### **Case 1 - On frontend push "Test Broker" button**
 

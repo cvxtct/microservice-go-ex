@@ -12,3 +12,5 @@ microservice-01.code-workspace
 # DB
 project/db-data/*
 
+logger-service/logs/logs.pb.go
+logger-service/logs/logs_grpc.pb.go

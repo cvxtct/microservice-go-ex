@@ -36,7 +36,7 @@ func (r *RPCServer) LogInfo(payload RPCPayload, resp *string) error {
 
 	// Try out
 	// Using the data models to put the log entry into mongo
-	//
+	// it actually works
 	// event := data.LogEntry{
 	// 	Name: payload.Name,
 	// 	Data: payload.Data,

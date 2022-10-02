@@ -29,6 +29,7 @@ func main() {
 	}
 	defer rabbitConn.Close()
 
+	// passing connection to the Config struct
 	app := Config{
 		Rabbit: rabbitConn,
 	}
@@ -48,6 +49,8 @@ func main() {
 	}
 }
 
+// Connect connects to the RabbitMQ server
+// Returns connection if succeed otherwise err
 func connect() (*amqp.Connection, error) {
 
 	var counts int64

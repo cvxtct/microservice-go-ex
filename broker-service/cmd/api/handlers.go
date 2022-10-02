@@ -15,6 +15,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// RequestPayload is the main upper struct
+// service related structs are embed into this struct
 type RequestPayload struct {
 	Action string      `json:"action"`
 	Auth   AuthPayload `json:"auth,omitempty"`
@@ -39,6 +41,11 @@ type LogPayload struct {
 	Data string `json:"data"`
 }
 
+// If a new service with a new logic will rise
+// Just add a new struct and extend the RequestPayload struct
+
+// Broker does nothig extra but response the "Hit the broker" message
+// if one calls the localhost:8080/
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	payload := jsonResponse{
 		Error:   false,
@@ -61,15 +68,31 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	// w.Write(out)
 }
 
+// HandleSubmission actually the entrypoint of the services
+// it is able to decide which handler to call based on the action field.
+// clients must respect the API format:
+//
+//	{
+//		action: "mail",
+//		mail: {
+//			from: "me@example.com",
+//			to: "you@there.com",
+//			subject: "Test Email",
+//			message: "Hello there!",
+//		}
+//	}
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
+	// variable to store the request
 	var requestPayload RequestPayload
 
+	// extract the json from the requestPayload
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
+	// switch to make the decision
 	switch requestPayload.Action {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)

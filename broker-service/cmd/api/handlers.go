@@ -112,50 +112,65 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 
 // This will be not in use anymore, stay here for reference
 // This was the http based logItem()
+// logItem logs item received via http request
 func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
+	// marshal entry (in prod MarshalIndent is not necessary)
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
+	// this is where we are going to send the request, logger-service endpoint
 	logServiceURL := "http://logger-service/log"
 
+	// define the request using the http module
 	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
+	// needs a http header as well
 	request.Header.Set("Content-Type", "application/json")
 
+	// create a http client
 	client := &http.Client{}
 
+	// do the http request using the http client
 	response, err := client.Do(request)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
+	// clean after method execution
 	defer response.Body.Close()
 
+	// if logger-service response status code is not accepted
+	// send back the error using errorJSON for the caller (in this case for the frontend)
 	if response.StatusCode != http.StatusAccepted {
 		app.errorJSON(w, err)
 		return
 	}
 
+	// otherwise let's define a response
 	var payload jsonResponse
-
+	// fields are in this case:
 	payload.Error = false
 	payload.Message = "logged"
-
+	// send back for the caller
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
 // This is not in use anymore, stay here for reference
+// logeventViaRabbit puts the log payload into the rabbit queue
+// using the specified channel
 func (app *Config) logeventViaRabbit(w http.ResponseWriter, l LogPayload) {
+	// simple as it is
 	err := app.pushToQueue(l.Name, l.Data)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
+	// again send back the response for the caller
 	var payload jsonResponse
 	payload.Error = false
 	payload.Message = "logged via RabbitMQ"
@@ -164,12 +179,15 @@ func (app *Config) logeventViaRabbit(w http.ResponseWriter, l LogPayload) {
 }
 
 // This is not in use anymore, stay here for reference
+// pushToQueue will push the log message
 func (app *Config) pushToQueue(name, msg string) error {
+	// creates an event emitter from the event package
 	emitter, err := event.NewEventEmitter(app.Rabbit)
 	if err != nil {
 		return err
 	}
 
+	// create the log payload for the queue
 	payload := LogPayload{
 		Name: name,
 		Data: msg,
@@ -177,6 +195,7 @@ func (app *Config) pushToQueue(name, msg string) error {
 
 	// MarshalIndent no needed in production -> Marshal
 	j, _ := json.MarshalIndent(&payload, "", "\t")
+	// push it into the queue using "log-topic"
 	err = emitter.Push(string(j), "log.INFO")
 	if err != nil {
 		return err
@@ -186,6 +205,8 @@ func (app *Config) pushToQueue(name, msg string) error {
 
 }
 
+// Authenticate is juts an example logic how to pass information
+// to a service.
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	// create some json we'll send to the auth microservice
 	jsonData, _ := json.MarshalIndent(a, "", "\t")

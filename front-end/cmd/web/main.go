@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	// frontend serves the "/" route on port 80
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		render(w, "test.page.gohtml")
 	})
@@ -19,6 +20,7 @@ func main() {
 	}
 }
 
+// render renders the frontend templates
 func render(w http.ResponseWriter, t string) {
 
 	partials := []string{

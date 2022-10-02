@@ -2,11 +2,17 @@ package main
 
 import (
 	"broker/event"
+	"broker/logs"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/rpc"
+	"time"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type RequestPayload struct {
@@ -287,6 +293,52 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 
 	app.writeJSON(w, http.StatusAccepted, payload)
 
+}
+
+func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
+	// payload variable to store the request payload
+	var requestPayload RequestPayload
+
+	// read the request payload into requestPayload variable
+	err := app.readJSON(w, r, &requestPayload)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	// create the connection aka call the logger service gRPC server using no credentials
+	conn, err := grpc.Dial("logger-service:50001", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	defer conn.Close()
+
+	// create a ew log service client with the connection object - this is from protobuf
+	c := logs.NewLogServiceClient(conn)
+	// create a context with timeout
+	ctx, cancle := context.WithTimeout(context.Background(), time.Second)
+	defer cancle()
+
+	// using contecxt call the WriteLog remote function and populate the protobuf message fields
+	// the write log is at logger-service/cmd/api/grpc.go
+	// confusing -> WriteLog sends back the "logged" message, however we defin our own response message!!??
+	_, err = c.WriteLog(ctx, &logs.LogRequest{
+		LogEntry: &logs.Log{
+			Name: requestPayload.Log.Name,
+			Data: requestPayload.Log.Data,
+		},
+	})
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	var payload jsonResponse
+	payload.Error = false
+	payload.Message = "logged"
+
+	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
 // In order to be able to send a log request for the logger service

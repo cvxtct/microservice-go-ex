@@ -10,6 +10,7 @@ type Emitter struct {
 	connection *amqp.Connection
 }
 
+// setup is for connection and declrae exchange
 func (e *Emitter) setup() error {
 	channel, err := e.connection.Channel()
 	if err != nil {
@@ -29,7 +30,7 @@ func (e *Emitter) Push(event string, severity string) error {
 	defer channel.Close()
 
 	log.Println("Pushing to channel")
-
+	// channel.Publish is deprecated: Use PublishWithContext instead.  (SA1019)go-staticcheck
 	err = channel.Publish(
 		"logs_topic",
 		severity,
@@ -48,6 +49,7 @@ func (e *Emitter) Push(event string, severity string) error {
 	return nil
 }
 
+// NewEventEmitter creates a new emitter and returns it
 func NewEventEmitter(conn *amqp.Connection) (Emitter, error) {
 	emitter := Emitter{
 		connection: conn,

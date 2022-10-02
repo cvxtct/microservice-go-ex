@@ -261,6 +261,8 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
+// sendMail calls the mailer service and sends the Email payload
+// steps are almost identical with the authenticate method
 func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
 
@@ -298,12 +300,15 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
+// define RPC payload struct
 type RPCPayload struct {
 	Name string
 	Data string
 }
 
+// ligItemViaRPC will call the logger service and calls the remote function
 func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
+	//
 	client, err := rpc.Dial("tcp", "logger-service:5001")
 	if err != nil {
 		app.errorJSON(w, err)
@@ -339,6 +344,8 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 
 }
 
+// LogViaGRPC is using the compiled protobuf message and service definition
+// to create remote call on the logger-service
 func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	// payload variable to store the request payload
 	var requestPayload RequestPayload
@@ -359,15 +366,15 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	// create a ew log service client with the connection object - this is from protobuf
-	c := logs.NewLogServiceClient(conn)
+	client := logs.NewLogServiceClient(conn)
 	// create a context with timeout
 	ctx, cancle := context.WithTimeout(context.Background(), time.Second)
 	defer cancle()
 
 	// using contecxt call the WriteLog remote function and populate the protobuf message fields
 	// the write log is at logger-service/cmd/api/grpc.go
-	// confusing -> WriteLog sends back the "logged" message, however we defin our own response message!!??
-	res, err := c.WriteLog(ctx, &logs.LogRequest{
+	// confusing -> WriteLog sends back the "logged" message, however we define our own response message in the WriteLog!!??
+	res, err := client.WriteLog(ctx, &logs.LogRequest{
 		LogEntry: &logs.Log{
 			Name: requestPayload.Log.Name,
 			Data: requestPayload.Log.Data,

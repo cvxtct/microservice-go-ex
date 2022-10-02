@@ -23,8 +23,10 @@ func (app *Config) routes() http.Handler {
 
 	mux.Use(middleware.Heartbeat(("/ping")))
 
+	// this is just the first try out
 	mux.Post("/", app.Broker)
 
+	// endpoint for the gRPC log request
 	mux.Post("/log-grpc", app.LogViaGRPC)
 
 	// handle every submission from the frontend

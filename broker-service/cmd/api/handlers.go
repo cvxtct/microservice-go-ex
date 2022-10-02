@@ -323,7 +323,7 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	// using contecxt call the WriteLog remote function and populate the protobuf message fields
 	// the write log is at logger-service/cmd/api/grpc.go
 	// confusing -> WriteLog sends back the "logged" message, however we defin our own response message!!??
-	_, err = c.WriteLog(ctx, &logs.LogRequest{
+	res, err := c.WriteLog(ctx, &logs.LogRequest{
 		LogEntry: &logs.Log{
 			Name: requestPayload.Log.Name,
 			Data: requestPayload.Log.Data,
@@ -336,7 +336,10 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 
 	var payload jsonResponse
 	payload.Error = false
-	payload.Message = "logged"
+	// try out using the response
+	// payload.Message = "logged"
+	// this actually works
+	payload.Message = res.String()
 
 	app.writeJSON(w, http.StatusAccepted, payload)
 }

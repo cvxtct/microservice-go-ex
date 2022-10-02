@@ -19,6 +19,7 @@ type jsonResponse struct {
 // A Request represents an HTTP request received by a server
 // or to be sent by a client.
 
+// readJSON to read the json request from the http request
 func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // 1 Mb
 
@@ -70,6 +71,7 @@ func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) er
 	return nil
 }
 
+// writeJSON writes back the http response
 func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
@@ -93,6 +95,7 @@ func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, header
 
 }
 
+// errorJSON will reply a status bad request and the error message -> writeJSON
 func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 

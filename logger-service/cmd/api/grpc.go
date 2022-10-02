@@ -11,15 +11,17 @@ import (
 	"google.golang.org/grpc"
 )
 
+// LogServer struct holds the
 type LogServer struct {
 	logs.UnimplementedLogServiceServer
 	Models data.Models
 }
 
+// WriteLog method writes logs into mongo using models data
 func (l *LogServer) WriteLog(ctx context.Context, req *logs.LogRequest) (*logs.LogResponse, error) {
 	input := req.GetLogEntry()
 
-	// write the log
+	// logEntry structure to put the log into the db
 	logEntry := data.LogEntry{
 		Name: input.Name,
 		Data: input.Data,
@@ -37,7 +39,7 @@ func (l *LogServer) WriteLog(ctx context.Context, req *logs.LogRequest) (*logs.L
 }
 
 func (app *Config) gRPCListen() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(";%s", gRpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", gRpcPort))
 	if err != nil {
 		log.Fatalf("Failed to listen for gRPC: %v", err)
 	}

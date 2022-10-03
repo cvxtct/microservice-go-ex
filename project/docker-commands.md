@@ -8,3 +8,7 @@ docker swarm join-token manager
 docker swarm join-token worker
 docker stack deploy -c swarm.yml myapp
 docker service ls
+ docker service scale myapp_listener-service=3
+update the swarm: docker service scale myapp_logger-serice=2
+update the swarm: docker service update --image tfosorcim/logger-service:1.0.1 myapp_logger-service
+stop docker swarm: docker swarm leave --force

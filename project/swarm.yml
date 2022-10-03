@@ -67,7 +67,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - ./db-data/rabbitmq/:/var/lib/rabbitmq/
+      - ./db-data/mongo/:/data/db
 
   postgres:
     image: 'postgres:14.0'

@@ -389,9 +389,9 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	var payload jsonResponse
 	payload.Error = false
 	// try out using the response
-	payload.Message = "logged"
+	// payload.Message = "logged"
 	// this actually works
-	// payload.Message = res.String()
+	payload.Message = res.String()
 
 	app.writeJSON(w, http.StatusAccepted, payload)
 }

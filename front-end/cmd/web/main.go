@@ -38,9 +38,13 @@ func render(w http.ResponseWriter, t string) {
 	// 	"./cmd/web/templates/header.partial.gohtml",
 	// 	"./cmd/web/templates/footer.partial.gohtml",
 	// }
-
+	// add t to templateSlice
 	var templateSlice []string
 	templateSlice = append(templateSlice, fmt.Sprintf("templates/%s", t))
+
+	// next add partials to templateSlice too
+	// should replace loop with
+	// templateSlice = append(templateSlice, partials...) (S1011)go-staticcheck
 
 	for _, x := range partials {
 		templateSlice = append(templateSlice, x)

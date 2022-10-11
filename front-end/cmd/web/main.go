@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
@@ -16,7 +15,9 @@ func main() {
 	})
 
 	fmt.Println("Starting front end service on port 8081 (80 before)")
-	err := http.ListenAndServe(":8081", nil)
+	// err := http.ListenAndServe(":8081", nil)
+	// k8s
+	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -63,7 +64,9 @@ func render(w http.ResponseWriter, t string) {
 		BrokerURL string
 	}
 
-	data.BrokerURL = os.Getenv("BROKER_URL")
+	// data.BrokerURL = os.Getenv("BROKER_URL")
+	// k8s outside
+	data.BrokerURL = "http://localhost:8080"
 	// swarm
 	// if err := tmpl.Execute(w, nil); err != nil {
 	if err := tmpl.Execute(w, data); err != nil {

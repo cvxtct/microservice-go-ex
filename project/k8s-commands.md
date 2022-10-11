@@ -6,3 +6,5 @@ kubectl get svc
 kubectl get deployments
 delete deployments broker-service mongo rabbitmq
 kubectl delete svc broker-service mongo rabbitmq
+expose service as load balancer -> kubectl expose deployment broker-service --type=LoadBalancer --port=8080 --target-port=8080
+minikube tunnel

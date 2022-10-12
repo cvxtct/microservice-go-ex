@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: front-end
-        image: tfosorcim/front-end:1.0.1
+        image: "tfosorcim/front-end:1.0.1"
         resources:
           requests:
             memory: "64Mi"

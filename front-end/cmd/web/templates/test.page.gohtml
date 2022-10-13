@@ -67,6 +67,7 @@
         }
 
         fetch({{print .BrokerURL "/handle"}}, body)
+        console.log({{.Broker}}, "Mail")
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -101,6 +102,7 @@
         }
 
         fetch({{print .BrokerURL "/log-grpc"}}, body)
+        console.log({{.Broker}})
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -135,6 +137,7 @@
         }
 
         fetch({{print .BrokerURL "/handle"}}, body)
+        console.log({{.Broker}})
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -170,6 +173,7 @@
         }
 
         fetch({{print .BrokerURL "/handle"}}, body)
+        console.log({{.Broker}})
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML = JSON.stringify(payload, undefined, 4);
@@ -194,6 +198,7 @@
 
         // fetch("http:\/\/localhost:8080", body)
         fetch({{print .BrokerURL "/"}}, body)
+        console.log({{.Broker}})
         .then((response) => response.json())
         .then((data) => {
             sent.innerHTML ="empty post request";

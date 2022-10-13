@@ -14,37 +14,22 @@ const dbTimeout = time.Second * 3
 
 var db *sql.DB
 
-type PostgresRepository struct {
-	Conn *sql.DB
-}
-
-func NewPostgresRepository(pool *sql.DB) *PostgresRepository {
-	db = pool
-	return &PostgresRepository{
-		Conn: pool,
-	}
-}
-
 // New is the function used to create an instance of the data package. It returns the type
 // Model, which embeds all the types we want to be available to our application.
+func New(dbPool *sql.DB) Models {
+	db = dbPool
 
-// Switching to repository pattern
-// func New(dbPool *sql.DB) Models {
-// 	db = dbPool
-
-// 	return Models{
-// 		User: User{},
-// 	}
-// }
+	return Models{
+		User: User{},
+	}
+}
 
 // Models is the type for this package. Note that any model that is included as a member
 // in this type is available to us throughout the application, anywhere that the
 // app variable is used, provided that the model is also added in the New function.
-
-// Switching to repository pattern
-// type Models struct {
-// 	User User
-// }
+type Models struct {
+	User User
+}
 
 // User is the structure which holds one user from the database.
 type User struct {
@@ -59,7 +44,7 @@ type User struct {
 }
 
 // GetAll returns a slice of all users, sorted by last name
-func (u *PostgresRepository) GetAll() ([]*User, error) {
+func (u *User) GetAll() ([]*User, error) {
 	// context is for maintain connections, like in this case, during db connection, to avoid
 	// long running database request -> terminate after timeout
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
@@ -100,7 +85,7 @@ func (u *PostgresRepository) GetAll() ([]*User, error) {
 }
 
 // GetByEmail returns one user by email
-func (u *PostgresRepository) GetByEmail(email string) (*User, error) {
+func (u *User) GetByEmail(email string) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -128,7 +113,7 @@ func (u *PostgresRepository) GetByEmail(email string) (*User, error) {
 }
 
 // GetOne returns one user by id
-func (u *PostgresRepository) GetOne(id int) (*User, error) {
+func (u *User) GetOne(id int) (*User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -157,7 +142,7 @@ func (u *PostgresRepository) GetOne(id int) (*User, error) {
 
 // Update updates one user in the database, using the information
 // stored in the receiver u
-func (u *PostgresRepository) Update(user User) error {
+func (u *User) Update() error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -171,12 +156,12 @@ func (u *PostgresRepository) Update(user User) error {
 	`
 
 	_, err := db.ExecContext(ctx, stmt,
-		user.Email,
-		user.FirstName,
-		user.LastName,
-		user.Active,
+		u.Email,
+		u.FirstName,
+		u.LastName,
+		u.Active,
 		time.Now(),
-		user.ID,
+		u.ID,
 	)
 
 	if err != nil {
@@ -187,22 +172,22 @@ func (u *PostgresRepository) Update(user User) error {
 }
 
 // Delete deletes one user from the database, by User.ID
-// func (u *PostgresRepository) Delete() error {
-// 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
-// 	defer cancel()
+func (u *User) Delete() error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
 
-// 	stmt := `delete from users where id = $1`
+	stmt := `delete from users where id = $1`
 
-// 	_, err := db.ExecContext(ctx, stmt, u.ID)
-// 	if err != nil {
-// 		return err
-// 	}
+	_, err := db.ExecContext(ctx, stmt, u.ID)
+	if err != nil {
+		return err
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 // DeleteByID deletes one user from the database, by ID
-func (u *PostgresRepository) DeleteByID(id int) error {
+func (u *User) DeleteByID(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -217,7 +202,7 @@ func (u *PostgresRepository) DeleteByID(id int) error {
 }
 
 // Insert inserts a new user into the database, and returns the ID of the newly inserted row
-func (u *PostgresRepository) Insert(user User) (int, error) {
+func (u *User) Insert(user User) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -248,7 +233,7 @@ func (u *PostgresRepository) Insert(user User) (int, error) {
 }
 
 // ResetPassword is the method we will use to change a user's password.
-func (u *PostgresRepository) ResetPassword(password string, user User) error {
+func (u *User) ResetPassword(password string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -258,7 +243,7 @@ func (u *PostgresRepository) ResetPassword(password string, user User) error {
 	}
 
 	stmt := `update users set password = $1 where id = $2`
-	_, err = db.ExecContext(ctx, stmt, hashedPassword, user.ID)
+	_, err = db.ExecContext(ctx, stmt, hashedPassword, u.ID)
 	if err != nil {
 		return err
 	}
@@ -269,8 +254,8 @@ func (u *PostgresRepository) ResetPassword(password string, user User) error {
 // PasswordMatches uses Go's bcrypt package to compare a user supplied password
 // with the hash we have stored for a given user in the database. If the password
 // and hash match, we return true; otherwise, we return false.
-func (u *PostgresRepository) PasswordMatches(plainText string, user User) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(plainText))
+func (u *User) PasswordMatches(plainText string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 	if err != nil {
 		switch {
 		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):

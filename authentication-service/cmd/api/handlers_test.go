@@ -3,13 +3,46 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func Test_Authenticate(t *testing.T) {
+// ---> this is needed to mock logger-service call
+type RoundTripFunc func(req *http.Request) *http.Response
 
+func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req), nil
+}
+
+func NewTestClient(fn RoundTripFunc) *http.Client {
+	return &http.Client{
+		Transport: fn,
+	}
+}
+
+// <---
+
+func Test_Authenticate(t *testing.T) {
+	// test http client will send this back
+	jsonToReturn := `
+{
+	"error": false,
+	"message": "some message"
+}
+	`
+	// --> mock logger service
+	client := NewTestClient(func(req *http.Request) *http.Response {
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(bytes.NewBufferString(jsonToReturn)),
+			Header:     make(http.Header),
+		}
+	})
+
+	testApp.Client = client
+	// <--
 	postBody := map[string]interface{}{
 		"email":    "me@here.com",
 		"password": "verysecret",

@@ -35,7 +35,7 @@ services:
       replicas: 1
   
   authentication-service:
-    image: tfosorcim/authentication-service:1.0.2
+    image: tfosorcim/authentication-service:1.0.3
     deploy:
       mode: replicated
       replicas: 1

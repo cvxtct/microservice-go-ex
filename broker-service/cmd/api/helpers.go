@@ -1,6 +1,7 @@
 package main
 
 import (
+	"broker/types"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,12 +9,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-type jsonResponse struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-}
 
 // http.ResponseWrite to coonstruct http response
 // A Request represents an HTTP request received by a server
@@ -103,7 +98,7 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 		statusCode = status[0]
 	}
 
-	var payload jsonResponse
+	var payload types.JsonResponse
 	payload.Error = true
 	payload.Message = err.Error()
 

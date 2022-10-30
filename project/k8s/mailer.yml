@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mailer-service
-        image: "tfosorcim/mail-service:1.0.2"
+        image: "tfosorcim/mailer-service:1.0.4"
         resources:
           requests:
             memory: "64Mi"

@@ -5,7 +5,7 @@ LOGGER_BINARY=loggerServiceApp
 AUTH_BINARY=authApp
 LISTENER_BINARY=listenerApp
 FRONT_BINARY=frontEndApp
-VERSION=1.0.2
+VERSION=1.0.5
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -32,6 +32,13 @@ build_front_linux:
 	@echo "Building front end linux binary..."
 	cd ../front-end && env GOOS=linux CGO_ENABLED=0 go build -o ${FRONT_BINARY} ./cmd/web
 	@echo "Done!"
+
+## build_front_linux: builds the broker binary as a linux executable
+build_front_osx:
+	@echo "Building front end linux binary..."
+	cd ../front-end && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
+	@echo "Done!"
+
 
 ## build_broker: builds the broker binary as a linux executable
 build_broker:
@@ -64,14 +71,14 @@ build_auth:
 	@echo "Done!"
 
 ## start: starts the front end
-start: build_front_linux
+start: build_front_osx
 	@echo "Starting front end"
-	cd ../front-end && ./${FRONT_BINARY} &
+	cd ../front-end && ./${FRONT_END_BINARY} &
 
 ## stop: stop the front end
 stop:
 	@echo "Stopping front end..."
-	@-pkill -SIGTERM -f "./${FRONT_BINARY}"
+	@-pkill -SIGTERM -f "./${FRONT_END_BINARY}"
 	@echo "Stopped front end!"
 
 ## DOCKER HUB

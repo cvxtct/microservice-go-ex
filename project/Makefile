@@ -64,14 +64,14 @@ build_auth:
 	@echo "Done!"
 
 ## start: starts the front end
-start: build_front
+start: build_front_linux
 	@echo "Starting front end"
-	cd ../front-end && ./${FRONT_END_BINARY} &
+	cd ../front-end && ./${FRONT_BINARY} &
 
 ## stop: stop the front end
 stop:
 	@echo "Stopping front end..."
-	@-pkill -SIGTERM -f "./${FRONT_END_BINARY}"
+	@-pkill -SIGTERM -f "./${FRONT_BINARY}"
 	@echo "Stopped front end!"
 
 ## DOCKER HUB

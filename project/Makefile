@@ -33,6 +33,13 @@ build_front_linux:
 	cd ../front-end && env GOOS=linux CGO_ENABLED=0 go build -o ${FRONT_BINARY} ./cmd/web
 	@echo "Done!"
 
+## build_front_linux: builds the broker binary as a linux executable
+build_front_osx:
+	@echo "Building front end linux binary..."
+	cd ../front-end && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
+	@echo "Done!"
+
+
 ## build_broker: builds the broker binary as a linux executable
 build_broker:
 	@echo "Building broker binary..."
@@ -64,7 +71,7 @@ build_auth:
 	@echo "Done!"
 
 ## start: starts the front end
-start: build_front
+start: build_front_osx
 	@echo "Starting front end"
 	cd ../front-end && ./${FRONT_END_BINARY} &
 

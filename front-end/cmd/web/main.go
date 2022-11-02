@@ -18,7 +18,7 @@ func main() {
 	fmt.Println("Starting front end service on port 8081 (80 before)")
 	// err := http.ListenAndServe(":8081", nil)
 	// k8s
-	err := http.ListenAndServe(":8081", nil)
+	err := http.ListenAndServe(":80", nil)
 	if err != nil {
 		log.Panic(err)
 	}

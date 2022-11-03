@@ -9,13 +9,11 @@ import (
 )
 
 func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
-
 	var requestPayload struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 
-	// w response writer, r request, read it into requestPayload
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
 		app.errorJSON(w, err, http.StatusBadRequest)
@@ -23,13 +21,13 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// validate the user against the database
-	user, err := app.Models.User.GetByEmail(requestPayload.Email)
+	user, err := app.Repo.GetByEmail(requestPayload.Email)
 	if err != nil {
 		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
 		return
 	}
 
-	valid, err := user.PasswordMatches(requestPayload.Password)
+	valid, err := app.Repo.PasswordMatches(requestPayload.Password, *user)
 	if err != nil || !valid {
 		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
 		return
@@ -61,16 +59,6 @@ func (app *Config) logRequest(name, data string) error {
 	entry.Data = data
 
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
-	// in this case, the broker is not in the game
-	// in order to achieve, the entry struct must be modified like:
-	// {
-	// 	action: "log",
-	// 	log: {
-	// 		name: "event",
-	// 		data: "Some kind of data",
-	// 	}
-	// }
-	// Question: which way is the standard
 	logServiceURL := "http://logger-service/log"
 
 	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
@@ -78,12 +66,12 @@ func (app *Config) logRequest(name, data string) error {
 		return err
 	}
 
-	client := http.Client{}
-	_, err = client.Do(request)
+	// client := &http.Client{}
+	// _, err = client.Do(request)
+	_, err = app.Client.Do(request)
 	if err != nil {
 		return err
 	}
 
 	return nil
-
 }

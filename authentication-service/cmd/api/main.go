@@ -28,6 +28,7 @@ func main() {
 
 	// connect to DB
 	conn := connectToDB()
+
 	if conn == nil {
 		log.Panic("Can't connect to Postgres!")
 	}
@@ -36,6 +37,8 @@ func main() {
 	app := Config{
 		Client: &http.Client{},
 	}
+
+	app.setupRepo(conn)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),

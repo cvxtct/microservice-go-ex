@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"net/rpc"
 	"time"
@@ -26,6 +27,7 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 		Error:   false,
 		Message: "Hit the broker",
 	}
+	log.Println("Hit the broker")
 
 	// log hit the broker http
 	// err := app.logRequest("broker", payload.Message)

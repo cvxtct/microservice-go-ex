@@ -192,8 +192,9 @@
             method: 'POST',
         }
         // swarm
-
-        // fetch("http:\/\/localhost:8080", body)
+        // without caddy
+        //fetch("http:\/\/localhost:8080", body)
+        // with caddy
         fetch({{print .BrokerURL "/"}}, body)
         .then((response) => response.json())
         .then((data) => {

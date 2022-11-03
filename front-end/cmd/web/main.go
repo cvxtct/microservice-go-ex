@@ -16,8 +16,9 @@ func main() {
 	})
 
 	fmt.Println("Starting front end service on port 8081 (80 before)")
-	// err := http.ListenAndServe(":8081", nil)
-	// k8s
+	// standalone or in dockercompose
+	// err := http.ListenAndServe(":81", nil)
+	// k8s, swarm
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Panic(err)

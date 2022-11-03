@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: logger-service
-        image: "tfosorcim/logger-service:1.0.2"
+        image: "tfosorcim/logger-service:1.0.4"
         resources:
           requests:
             memory: "64Mi"

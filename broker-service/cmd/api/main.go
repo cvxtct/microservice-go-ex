@@ -12,7 +12,9 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
-
+// if compose without webserver
+// const webPort = "80"
+// with caddy
 const webPort = "8080"
 
 type Config struct {
@@ -61,7 +63,7 @@ func connect() (*amqp.Connection, error) {
 	for {
 		c, err := amqp.Dial("amqp://guest:guest@rabbitmq")
 		if err != nil {
-			fmt.Println("RabbitMQ not yet ready...")
+			log.Println("RabbitMQ not yet ready...")
 			counts++
 		} else {
 			log.Println("Connected to RabbitMQ!")

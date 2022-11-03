@@ -3,10 +3,12 @@ package main
 import (
 	"broker/event"
 	"broker/logs"
+	"broker/types"
 	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"net/rpc"
 	"time"
@@ -15,42 +17,17 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// RequestPayload is the main upper struct
-// service related structs are embed into this struct
-type RequestPayload struct {
-	Action string      `json:"action"`
-	Auth   AuthPayload `json:"auth,omitempty"`
-	Log    LogPayload  `json:"log,omitempty"`
-	Mail   MailPayload `json:"mail,omitempty"`
-}
-
-type MailPayload struct {
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Message string `json:"message"`
-}
-
-type AuthPayload struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type LogPayload struct {
-	Name string `json:"name"`
-	Data string `json:"data"`
-}
-
 // If a new service with a new logic will rise
 // Just add a new struct and extend the RequestPayload struct
 
 // Broker does nothig extra but response the "Hit the broker" message
 // if one calls the localhost:8080/
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
-	payload := jsonResponse{
+	payload := types.JsonResponse{
 		Error:   false,
 		Message: "Hit the broker",
 	}
+	log.Println("Hit the broker")
 
 	// log hit the broker http
 	// err := app.logRequest("broker", payload.Message)
@@ -83,7 +60,7 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 //	}
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	// variable to store the request
-	var requestPayload RequestPayload
+	var requestPayload types.RequestPayload
 
 	// extract the json from the requestPayload
 	err := app.readJSON(w, r, &requestPayload)
@@ -113,7 +90,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 // This will be not in use anymore, stay here for reference
 // This was the http based logItem()
 // logItem logs item received via http request
-func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
+func (app *Config) logItem(w http.ResponseWriter, entry types.LogPayload) {
 	// marshal entry (in prod MarshalIndent is not necessary)
 	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
@@ -151,7 +128,7 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	}
 
 	// otherwise let's define a response
-	var payload jsonResponse
+	var payload types.JsonResponse
 	// fields are in this case:
 	payload.Error = false
 	payload.Message = "logged"
@@ -162,7 +139,7 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 // This is not in use anymore, stay here for reference
 // logeventViaRabbit puts the log payload into the rabbit queue
 // using the specified channel
-func (app *Config) logeventViaRabbit(w http.ResponseWriter, l LogPayload) {
+func (app *Config) logeventViaRabbit(w http.ResponseWriter, l types.LogPayload) {
 	// simple as it is
 	err := app.pushToQueue(l.Name, l.Data)
 	if err != nil {
@@ -171,7 +148,7 @@ func (app *Config) logeventViaRabbit(w http.ResponseWriter, l LogPayload) {
 	}
 
 	// again send back the response for the caller
-	var payload jsonResponse
+	var payload types.JsonResponse
 	payload.Error = false
 	payload.Message = "logged via RabbitMQ"
 
@@ -188,7 +165,7 @@ func (app *Config) pushToQueue(name, msg string) error {
 	}
 
 	// create the log payload for the queue
-	payload := LogPayload{
+	payload := types.LogPayload{
 		Name: name,
 		Data: msg,
 	}
@@ -207,7 +184,7 @@ func (app *Config) pushToQueue(name, msg string) error {
 
 // Authenticate is juts an example logic how to pass information
 // to a service.
-func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
+func (app *Config) authenticate(w http.ResponseWriter, a types.AuthPayload) {
 	// create some json we'll send to the auth microservice
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
@@ -239,7 +216,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	}
 
 	// create a variable we'll read response.Body into
-	var jsonFromService jsonResponse
+	var jsonFromService types.JsonResponse
 
 	// decode the json from auth service
 	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
@@ -253,7 +230,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 		return
 	}
 
-	var payload jsonResponse
+	var payload types.JsonResponse
 	payload.Error = false
 	payload.Message = "Authenticated!"
 	payload.Data = jsonFromService.Data
@@ -263,7 +240,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 
 // sendMail calls the mailer service and sends the Email payload
 // steps are almost identical with the authenticate method
-func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
+func (app *Config) sendMail(w http.ResponseWriter, msg types.MailPayload) {
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
 
 	// call the mailer service
@@ -293,7 +270,7 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	}
 
 	// send back json
-	var payload jsonResponse
+	var payload types.JsonResponse
 	payload.Error = false
 	payload.Message = "Message sent to" + msg.To
 
@@ -307,7 +284,7 @@ type RPCPayload struct {
 }
 
 // ligItemViaRPC will call the logger service and calls the remote function
-func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
+func (app *Config) logItemViaRPC(w http.ResponseWriter, l types.LogPayload) {
 	//
 	client, err := rpc.Dial("tcp", "logger-service:5001")
 	if err != nil {
@@ -336,7 +313,7 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 
 	// Send the answer back to the frontend
 	// This will store the info that the payload was processed
-	payload := jsonResponse{
+	payload := types.JsonResponse{
 		Error:   false,
 		Message: result,
 	}
@@ -349,7 +326,7 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 // to create remote call on the logger-service
 func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 	// payload variable to store the request payload
-	var requestPayload RequestPayload
+	var requestPayload types.RequestPayload
 
 	// read the request payload into requestPayload variable
 	err := app.readJSON(w, r, &requestPayload)
@@ -386,7 +363,7 @@ func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload jsonResponse
+	var payload types.JsonResponse
 	payload.Error = false
 	// try out using the response
 	// payload.Message = "logged"

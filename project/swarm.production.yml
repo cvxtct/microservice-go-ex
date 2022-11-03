@@ -52,7 +52,7 @@ services:
       replicas: 1
   
   mailer-service:
-    image: tfosorcim/mail-service:1.0.0
+    image: tfosorcim/mailer-service:1.0.0
     deploy:
       mode: replicated
       replicas: 1

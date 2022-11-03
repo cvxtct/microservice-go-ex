@@ -5,7 +5,7 @@ LOGGER_BINARY=loggerServiceApp
 AUTH_BINARY=authApp
 LISTENER_BINARY=listenerApp
 FRONT_BINARY=frontEndApp
-VERSION=1.1.0
+VERSION=1.1.2
 
 ## up: starts all containers in the background without forcing build
 up:

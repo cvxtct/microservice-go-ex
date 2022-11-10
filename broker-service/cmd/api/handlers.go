@@ -1,9 +1,9 @@
 package main
 
 import (
-	"broker/event"
-	"broker/logs"
-	"broker/types"
+	"broker/internal/event"
+	"broker/internal/logs"
+	"broker/internal/types"
 	"bytes"
 	"context"
 	"encoding/json"

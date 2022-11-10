@@ -1,7 +1,7 @@
 package main
 
 import (
-	"broker/types"
+	"broker/internal/types"
 	"encoding/json"
 	"errors"
 	"fmt"

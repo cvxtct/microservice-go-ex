@@ -1,6 +1,7 @@
-package main
+package helpers
 
 import (
+	"broker/internal/config"
 	"broker/internal/types"
 	"encoding/json"
 	"errors"
@@ -10,12 +11,19 @@ import (
 	"strings"
 )
 
+var app *config.AppConfig
+
+// NewHelpers sets up app config for helpers
+func NewHelpers(a *config.AppConfig) {
+	app = a
+}
+
 // http.ResponseWrite to coonstruct http response
 // A Request represents an HTTP request received by a server
 // or to be sent by a client.
 
 // readJSON to read the json request from the http request
-func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) error {
+func ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	maxBytes := 1048576 // 1 Mb
 
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
@@ -67,7 +75,7 @@ func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) er
 }
 
 // writeJSON writes back the http response
-func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
+func WriteJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -91,7 +99,7 @@ func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, header
 }
 
 // errorJSON will reply a status bad request and the error message
-func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) error {
+func ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 
 	if len(status) > 0 {
@@ -102,5 +110,5 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 	payload.Error = true
 	payload.Message = err.Error()
 
-	return app.writeJSON(w, statusCode, payload)
+	return WriteJSON(w, statusCode, payload)
 }

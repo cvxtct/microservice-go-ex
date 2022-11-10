@@ -1,6 +1,8 @@
 package main
 
 import (
+	"broker/internal/config"
+	"broker/internal/handlers"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -8,7 +10,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func (app *Config) routes() http.Handler {
+func routes(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
 	// specify who is allowed to connect
@@ -24,13 +26,13 @@ func (app *Config) routes() http.Handler {
 	mux.Use(middleware.Heartbeat(("/ping")))
 
 	// this is just the first try out
-	mux.Post("/", app.Broker)
+	mux.Post("/", handlers.Repo.Broker)
 
 	// endpoint for the gRPC log request
-	mux.Post("/log-grpc", app.LogViaGRPC)
+	mux.Post("/log-grpc", handlers.Repo.LogViaGRPC)
 
 	// handle every submission from the frontend
-	mux.Post("/handle", app.HandleSubmission)
+	mux.Post("/handle", handlers.Repo.HandleSubmission)
 
 	return mux
 }

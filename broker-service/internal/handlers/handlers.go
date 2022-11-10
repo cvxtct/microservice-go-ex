@@ -93,11 +93,11 @@ func (m *Repository) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		m.authenticate(w, requestPayload.Auth)
 	case "log":
 		// log via calling the logger service
-		// app.logItem(w, requestPayload.Log)
+		// m.logItem(w, requestPayload.Log)
 		// log via calling the RabbitMQ listener service
-		// app.logeventViaRabbit(w, requestPayload.Log)
+		m.logeventViaRabbit(w, requestPayload.Log)
 		// Log item via RPC
-		m.logItemViaRPC(w, requestPayload.Log)
+		// m.logItemViaRPC(w, requestPayload.Log)
 	case "mail":
 		m.sendMail(w, requestPayload.Mail)
 	default:

@@ -15,6 +15,7 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"go.uber.org/zap"
 )
 
 // if compose without webserver
@@ -31,11 +32,17 @@ var version string
 
 func main() {
 	// print current version
-	log.Printf("starting up Broker version %s", version)
+	log.Printf("Preparing to start Broker version %s", version)
+
+	// configure logger
+	log, _ := zap.NewProduction(zap.WithCaller(false))
+	defer func() {
+		_ = log.Sync()
+	}()
 	// try to connect to rabbitmq
 	rabbitConn, err := connect()
 	if err != nil {
-		log.Println(err)
+		log.Error("Error connection to RabbitMQ", zap.Error(err))
 		os.Exit(1)
 	}
 	defer rabbitConn.Close()
@@ -47,18 +54,18 @@ func main() {
 	// passing connection to the Config struct
 	app.Rabbit = rabbitConn
 
-	log.Printf("Starting broker service on port %s\n", webPort)
+	log.Info("Starting broker service on ", zap.String("port:", webPort))
 
 	// define http server
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: routes(&app),
+		Handler: routes(log, &app),
 	}
 
 	// start the server
 	err = srv.ListenAndServe()
 	if err != nil {
-		log.Panic(err)
+		log.Panic("Broker panic", zap.Error(err))
 	}
 }
 

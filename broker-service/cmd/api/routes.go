@@ -3,14 +3,16 @@ package main
 import (
 	"broker/internal/config"
 	"broker/internal/handlers"
+	"broker/internal/middleware"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+  m "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"go.uber.org/zap"
 )
 
-func routes(app *config.AppConfig) http.Handler {
+func routes(log *zap.Logger, app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
 	// specify who is allowed to connect
@@ -23,7 +25,10 @@ func routes(app *config.AppConfig) http.Handler {
 		MaxAge:           300,
 	}))
 
-	mux.Use(middleware.Heartbeat(("/ping")))
+	mux.Use(m.Heartbeat(("/ping")))
+	if log != nil {
+		mux.Use(middleware.SetLogger(log))
+	}
 
 	// this is just the first try out
 	mux.Post("/", handlers.Repo.Broker)

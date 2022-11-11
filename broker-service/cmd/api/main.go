@@ -3,6 +3,10 @@ package main
 // Broker is the single point of entry
 
 import (
+	"broker/internal/config"
+	"broker/internal/handlers"
+	"broker/internal/helpers"
+
 	"fmt"
 	"log"
 	"math"
@@ -12,14 +16,17 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
+
 // if compose without webserver
 // const webPort = "80"
 // with caddy
 const webPort = "8080"
 
-type Config struct {
-	Rabbit *amqp.Connection
-}
+var app config.AppConfig
+
+// type Config struct {
+// 	Rabbit *amqp.Connection
+// }
 
 func main() {
 
@@ -31,17 +38,19 @@ func main() {
 	}
 	defer rabbitConn.Close()
 
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandlers(repo)
+	helpers.NewHelpers(&app)
+
 	// passing connection to the Config struct
-	app := Config{
-		Rabbit: rabbitConn,
-	}
+	app.Rabbit = rabbitConn
 
 	log.Printf("Starting broker service on port %s\n", webPort)
 
 	// define http server
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
+		Handler: routes(&app),
 	}
 
 	// start the server

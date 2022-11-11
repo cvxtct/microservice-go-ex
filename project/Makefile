@@ -5,7 +5,8 @@ LOGGER_BINARY=loggerServiceApp
 AUTH_BINARY=authApp
 LISTENER_BINARY=listenerApp
 FRONT_BINARY=frontEndApp
-VERSION=1.2.1
+VERSION=1.2.2
+BINARY_VERSION ?= $(shell git describe --match 'v[0-9]*' --tags --always)
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -43,7 +44,7 @@ build_front_osx:
 ## build_broker: builds the broker binary as a linux executable
 build_broker:
 	@echo "Building broker binary..."
-	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -o ${BROKER_BINARY} ./cmd/api
+	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=$(BINARY_VERSION)" -o ${BROKER_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## build_mail: builds the mail binary as a linux executable

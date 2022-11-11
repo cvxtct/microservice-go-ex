@@ -23,13 +23,15 @@ import (
 const webPort = "8080"
 
 var app config.AppConfig
+var version string
 
 // type Config struct {
 // 	Rabbit *amqp.Connection
 // }
 
 func main() {
-
+	// print current version
+	log.Printf("starting up Broker version %s", version)
 	// try to connect to rabbitmq
 	rabbitConn, err := connect()
 	if err != nil {

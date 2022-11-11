@@ -5,8 +5,16 @@ LOGGER_BINARY=loggerServiceApp
 AUTH_BINARY=authApp
 LISTENER_BINARY=listenerApp
 FRONT_BINARY=frontEndApp
-VERSION=1.2.2
+VERSION=1.3.0
 BINARY_VERSION ?= $(shell git describe --match 'v[0-9]*' --tags --always)
+
+# up_swarm: initialize and deploy docker swarm
+up_swarm:
+	@echo "Init swarm"
+	docker swarm init
+	@echo "Deploy swarm"
+	docker stack deploy -c swarm.yml myapp
+
 
 ## up: starts all containers in the background without forcing build
 up:

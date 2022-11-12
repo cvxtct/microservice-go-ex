@@ -22,7 +22,7 @@ jobs:
         go-version: 1.19
     - name: Install dependencies
       run: |
-        go get .
+        go mod vendor
 
     - name: Set outputs
       id: vars

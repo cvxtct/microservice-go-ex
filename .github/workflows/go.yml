@@ -15,6 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - uses: benjlevesque/short-sha@v2.1
+      id: short-sha
+      with:
+        length: 6
 
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -29,21 +33,20 @@ jobs:
     - name: Set binary name 
 
       run: |
-        echo "BINARY_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        BINARY_NAME=brokerApp-${{env.BINARY_VERSION}}
+        BINARY_NAME=brokerApp-${{env.SHA}}
         echo "BINARY_NAME"=$BINARY_NAME >> $GITHUB_ENV
    
-        - name: Build
-          run: cd broker-service && env GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=${{env.BINARY_VERSION}}" -o {{env.BINARY_NAME}} ./cmd/api
+    - name: Build
+      run: cd broker-service && env GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=${{env.BINARY_VERSION}}" -o {{env.BINARY_NAME}} ./cmd/api
 
-        - name: Release Notes
-          run: git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
+    - name: Release Notes
+      run: git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
 
-        - name: Release with Notes
-          uses: softprops/action-gh-release@v1
-          with:
-            body_path: ".github/RELEASE-TEMPLATE.md"
-            draft: true
-            files: broker-service/${{env.BINARY_NAME}}
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release with Notes
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: ".github/RELEASE-TEMPLATE.md"
+        draft: true
+        files: broker-service/${{env.BINARY_NAME}}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

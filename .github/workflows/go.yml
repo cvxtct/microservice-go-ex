@@ -29,11 +29,8 @@ jobs:
     - name: Set outputs
 
       run: |
-        GOOSARCH=${{matrix.goosarch}} 
-        GOOS=${GOOSARCH%/*}
-        GOARCH=${GOOSARCH#*/}
         echo "BINARY_VERSION=$(shell git describe --match 'v[0-9]*' --tags --always)" >> $GITHUB_ENV
-        BINARY_NAME=broker-service-$GOOS-$GOARCH-${{env.BINARY_VERSION}}
+        BINARY_NAME=brokerApp-${{env.BINARY_VERSION}}
         echo "BINARY_NAME"=$BINARY_NAME >> $GITHUB_ENV
    
     - name: Build

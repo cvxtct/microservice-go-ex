@@ -29,7 +29,7 @@ jobs:
     - name: Set outputs
 
       run: |
-        echo "BINARY_VERSION=$(shell git describe --match 'v[0-9]*' --tags --always)" >> $GITHUB_ENV
+        echo "BINARY_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         BINARY_NAME=brokerApp-${{env.BINARY_VERSION}}
         echo "BINARY_NAME"=$BINARY_NAME >> $GITHUB_ENV
    

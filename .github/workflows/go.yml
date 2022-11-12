@@ -27,7 +27,26 @@ jobs:
         cd broker-service && go mod vendor
 
     - name: Set outputs
-      id: vars
-      run: echo "binary_version=$(shell git describe --match 'v[0-9]*' --tags --always)" >> $GITHUB_OUTPUT
+
+      run: |
+        GOOSARCH=${{matrix.goosarch}} 
+        GOOS=${GOOSARCH%/*}
+        GOARCH=${GOOSARCH#*/}
+        "BINARY_VERSION=$(shell git describe --match 'v[0-9]*' --tags --always)" >> $GITHUB_ENV
+        BINARY_NAME=broker-service-$GOOS-$GOARCH-${{env.BINARY_VERSION}}
+        echo "BINARY_NAME"=$BINARY_NAME >> $GITHUB_ENV
+   
     - name: Build
       run: cd broker-service && env GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=${{ steps.vars.outputs.sha_short }}" -o 1.3.4 ./cmd/api
+    
+    - name: Release Notes
+      run: git log $(git describe HEAD~ --tags --abbrev=0)..HEAD --pretty='format:* %h %s%n  * %an <%ae>' --no-merges >> ".github/RELEASE-TEMPLATE.md"
+      
+    - name: Release with Notes
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: ".github/RELEASE-TEMPLATE.md"
+        draft: true
+        files: ${{env.BINARY_NAME}}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

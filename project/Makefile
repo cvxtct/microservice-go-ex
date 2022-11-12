@@ -5,8 +5,8 @@ LOGGER_BINARY=loggerServiceApp
 AUTH_BINARY=authApp
 LISTENER_BINARY=listenerApp
 FRONT_BINARY=frontEndApp
-VERSION=1.3.0
-BINARY_VERSION ?= $(shell git describe --match 'v[0-9]*' --tags --always)
+VERSION=1.3.1
+GITHASH ?= $(shell git describe --match 'v[0-9]*' --tags --always)
 
 # up_swarm: initialize and deploy docker swarm
 up_swarm:
@@ -52,7 +52,7 @@ build_front_osx:
 ## build_broker: builds the broker binary as a linux executable
 build_broker:
 	@echo "Building broker binary..."
-	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.version=$(BINARY_VERSION)" -o ${BROKER_BINARY} ./cmd/api
+	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -ldflags "-X main.buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.githash=$(GITHASH) -X main.version=${VERSION}" -o ${BROKER_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## build_mail: builds the mail binary as a linux executable

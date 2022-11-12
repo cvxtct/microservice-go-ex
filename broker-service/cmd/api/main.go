@@ -25,6 +25,8 @@ const webPort = "8080"
 
 var app config.AppConfig
 var version string
+var buildstamp string
+var githash string
 
 // type Config struct {
 // 	Rabbit *amqp.Connection
@@ -32,7 +34,7 @@ var version string
 
 func main() {
 	// print current version
-	log.Printf("Preparing to start Broker version %s", version)
+	log.Printf("Broker build: [%s] %s-%s", buildstamp, version, githash)
 
 	// configure logger
 	log, _ := zap.NewProduction(zap.WithCaller(false))

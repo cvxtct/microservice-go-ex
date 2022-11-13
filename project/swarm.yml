@@ -15,7 +15,7 @@ services:
       - caddy_config:/config
 
   front-end:
-    image: tfosorcim/front-end:1.1.2
+    image: "${FRONT_END}:1.1.2"
     deploy:
       mode: replicated
       replicas: 1
@@ -23,19 +23,19 @@ services:
       BROKER_URL: http://backend
 
   broker-service: 
-    image: tfosorcim/broker-service:1.3.1
+    image: "${BROKER_SERVICE}:1.3.1"
     deploy:
       mode: replicated
       replicas: 1
   
   listener-service:
-    image: tfosorcim/listener-service:1.1.2
+    image: "${LISTENER_SERVICE}:1.1.2"
     deploy:
       mode: replicated
       replicas: 1
   
   authentication-service:
-    image: tfosorcim/authentication-service:1.1.2
+    image: "${AUTHENTICATION_SERVICE}:1.1.2"
     deploy:
       mode: replicated
       replicas: 1
@@ -43,13 +43,13 @@ services:
       DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
 
   logger-service:
-    image: tfosorcim/logger-service:1.1.2
+    image: "${LOGGER_SERVICE}:1.1.2"
     deploy:
       mode: replicated
       replicas: 1
   
   mailer-service:
-    image: tfosorcim/mailer-service:1.1.2
+    image: "${MAILER_SERVICE}:1.1.2"
     deploy:
       mode: replicated
       replicas: 1

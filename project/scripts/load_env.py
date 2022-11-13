@@ -3,6 +3,7 @@ import pathlib
 import re
 import boto3
 import logging
+import time
 from typing import List
 from botocore.exceptions import ClientError
 
@@ -64,8 +65,9 @@ def populate_env_file(repositories: List[dict]) -> None:
             for uri in repo_uris:
                 f.write(create_env_var_name(uri[0]) + '=' + uri[0] + '\n')
         f.close()
+        logger.info(".env file successfully populated!")
     else:
-        raise Exception("Problem with the repositories! None or wrong type.")
+        raise Exception("Problem with the repositories! None or wrong type!")
 
 
 

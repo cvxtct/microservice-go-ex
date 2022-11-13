@@ -7,6 +7,8 @@ LISTENER_BINARY=listenerApp
 FRONT_BINARY=frontEndApp
 VERSION=1.3.1
 GITHASH ?= $(shell git describe --match 'v[0-9]*' --tags --always)
+AWS_ACCOUNT_ID ?= $(shell aws sts get-caller-identity --query "Account" --output text)
+AWS_REGION ?= $(shell aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].[RegionName]')
 
 # up_swarm: initialize and deploy docker swarm
 up_swarm:
@@ -29,6 +31,9 @@ up_build: build_broker build_auth build_logger build_mail build_listener build_f
 	@echo "Building (when required) and starting docker images..."
 	docker-compose up --build -d
 	@echo "Docker images built and started!"
+
+## build: builds the binaries
+build: build_broker build_auth build_logger build_mail build_listener build_front_linux
 
 ## down: stop docker compose
 down:
@@ -102,31 +107,41 @@ build_and_tag_images: build_and_tag_mailer build_and_tag_logger build_and_tag_li
 build_and_tag_broker:
 	@echo "Build and tag broker"
 	cd ../broker-service && docker build -f broker-service.dockerfile -t tfosorcim/broker-service:${VERSION} .
+	docker image tag tfosorcim/broker-service:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/broker-service:${VERSION}
 
 # build and tag the authentication service
 build_and_tag_authentication:
 	@echo "Build and tag authentication"
 	cd ../authentication-service && docker build -f authentication-service.dockerfile -t tfosorcim/authentication-service:${VERSION} .
+	docker image tag tfosorcim/authentication-service:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/authentication-service:${VERSION}
 
 # build and tag the logger service
 build_and_tag_logger:
 	@echo "Build and tag logger"
 	cd ../logger-service && docker build -f logger-service.dockerfile -t tfosorcim/logger-service:${VERSION} .
+	docker image tag tfosorcim/logger-service:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/logger-service:${VERSION}
+
 
 # build and tag the mailer service
 build_and_tag_mailer:
 	@echo "Build and tag mailer"
 	cd ../mail-service && docker build -f mail-service.dockerfile -t tfosorcim/mailer-service:${VERSION} .
+	docker image tag tfosorcim/mailer-service:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/mailer-service:${VERSION}
+
 
 # build and tag the listener service
 build_and_tag_listener:
 	@echo "Build and tag listener"
 	cd ../listener-service && docker build -f listener-service.dockerfile -t tfosorcim/listener-service:${VERSION} .
+	docker image tag tfosorcim/listener-service:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/listener-service:${VERSION}
+
 
 # build and tag the front-end service
 build_and_tag_front-end:
 	@echo "Build and tag front-end"
 	cd ../front-end && docker build -f front-end.dockerfile -t tfosorcim/front-end:${VERSION} .
+	docker image tag tfosorcim/front-end:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/front-end:${VERSION}
+
 
 ## PUSH DOCKER IMAGES TO DOCKER HUB
 
@@ -137,30 +152,29 @@ push_images: push_broker push_authentication push_logger push_mailer push_listen
 # push broker image
 push_broker:
 	@echo "Push broker to docker hub"
-	cd ../broker-service && docker push tfosorcim/broker-service:${VERSION}
-
+	cd ../broker-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/broker-service:${VERSION}
 # push authentication service
 push_authentication:
 	@echo "Push authentication to docker hub"
-	cd ../authentication-service && docker push tfosorcim/authentication-service:${VERSION}
+	cd ../authentication-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/authentication-service:${VERSION}
 
 # push logger service
 push_logger:
 	@echo "Push logger to docker hub"
-	cd ../logger-service && docker push tfosorcim/logger-service:${VERSION}
+	cd ../logger-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/logger-service:${VERSION}
 
 # push mailer service
 push_mailer:
 	@echo "Push mailer to docker hub"
-	cd ../mail-service && docker push tfosorcim/mailer-service:${VERSION}
+	cd ../mail-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/mailer-service:${VERSION}
 
 # push listener service
 push_listener:
 	@echo "Push listener to docker hub"
-	cd ../listener-service && docker push tfosorcim/listener-service:${VERSION}
+	cd ../listener-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/listener-service:${VERSION}
 
 # push fron-end service
 push_frontend:
 	@echo "Push front-end to docker hub"
-	cd ../front-end && docker push tfosorcim/front-end:${VERSION}
+	cd ../front-end && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/front-end:${VERSION}
 

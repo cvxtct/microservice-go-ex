@@ -15,7 +15,8 @@ up_swarm:
 	@echo "Init swarm"
 	docker swarm init
 	@echo "Deploy swarm"
-	docker stack deploy -c swarm.yml myapp
+	export $(cat .env) > /dev/null 2>&1
+	docker stack deploy --with-registry-auth -c swarm.yml myapp 
 
 
 ## up: starts all containers in the background without forcing build

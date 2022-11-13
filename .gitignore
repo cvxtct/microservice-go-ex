@@ -19,3 +19,4 @@ project/terraform/dev-ecr/.terraform/modules/modules.json
 project/terraform/dev-ecr/.terraform/providers/registry.terraform.io/hashicorp/aws/3.75.2/darwin_amd64/terraform-provider-aws_v3.75.2_x5
 project/terraform/dev-ecr/terraform.tfstate
 project/terraform/dev-ecr/terraform.tfstate.backup
+project/.env

@@ -64,7 +64,7 @@ build_broker:
 ## build_mail: builds the mail binary as a linux executable
 build_mail:
 	@echo "Building mailer binary..."
-	cd ../mail-service && env GOOS=linux CGO_ENABLED=0 go build -o ${MAILER_BINARY} ./cmd/api
+	cd ../mailer-service && env GOOS=linux CGO_ENABLED=0 go build -o ${MAILER_BINARY} ./cmd/api
 	@echo "Done!"
 
 ## build_listener: builds the listener binary as a linux executable
@@ -126,7 +126,7 @@ build_and_tag_logger:
 # build and tag the mailer service
 build_and_tag_mailer:
 	@echo "Build and tag mailer"
-	cd ../mail-service && docker build -f mail-service.dockerfile -t tfosorcim/mailer-service:${VERSION} .
+	cd ../mailer-service && docker build -f mailer-service.dockerfile -t tfosorcim/mailer-service:${VERSION} .
 	docker image tag tfosorcim/mailer-service:${VERSION} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/mailer-service:${VERSION}
 
 
@@ -167,7 +167,7 @@ push_logger:
 # push mailer service
 push_mailer:
 	@echo "Push mailer to docker hub"
-	cd ../mail-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/mailer-service:${VERSION}
+	cd ../mailer-service && docker image push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/experiment/mailer-service:${VERSION}
 
 # push listener service
 push_listener:

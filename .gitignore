@@ -20,3 +20,6 @@ project/terraform/dev-ecr/.terraform/providers/registry.terraform.io/hashicorp/a
 project/terraform/dev-ecr/terraform.tfstate
 project/terraform/dev-ecr/terraform.tfstate.backup
 project/.env
+front-end/frontEndApp
+front-end/frontEndApp
+logger-service/loggerServiceApp

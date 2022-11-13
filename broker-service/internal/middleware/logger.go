@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"broker/internal/types"
 	"net/http"
 	"time"
 
@@ -26,8 +27,9 @@ func SetLogger(l *zap.Logger) func(next http.Handler) http.Handler {
 					zap.Duration("lat", time.Since(t1)),
 					zap.Int("status", ww.Status()),
 					zap.Int("size", ww.BytesWritten()),
-					//  TODO create request id
-					zap.String("reqId", middleware.GetReqID(r.Context())))
+					// Broker don't have yet context to populate this field
+					// zap.String("reqId", middleware.GetReqID(r.Context())),
+				)
 			}()
 
 			next.ServeHTTP(ww, r)

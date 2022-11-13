@@ -33,14 +33,16 @@ var githash string
 // }
 
 func main() {
-	// print current version
-	log.Printf("Broker build: [%s] %s-%s", buildstamp, version, githash)
 
 	// configure logger
 	log, _ := zap.NewProduction(zap.WithCaller(false))
 	defer func() {
 		_ = log.Sync()
 	}()
+
+	// print current version
+	log.Info("Broker", zap.String("build:", version), zap.String("-", githash), zap.String("Timestamp:",buildstamp))
+
 	// try to connect to rabbitmq
 	rabbitConn, err := connect()
 	if err != nil {

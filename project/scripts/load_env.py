@@ -29,7 +29,7 @@ def gen_repo_names() -> None:
 
     for _, dirs, _ in os.walk(root_path):
         for dir in dirs:
-                if '-service' in str(dir):
+                if '-service' in str(dir) or 'front-end' in str(dir):
                     repos.append('experiment' + '/' + str(dir))   
 
 

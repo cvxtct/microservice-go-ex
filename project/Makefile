@@ -15,7 +15,7 @@ up_swarm:
 	@echo "Init swarm"
 	docker swarm init
 	@echo "Deploy swarm"
-	export $(cat .env) > /dev/null 2>&1
+	export $(shell cat .env) > /dev/null 2>&1
 	docker stack deploy --with-registry-auth -c swarm.yml myapp 
 
 

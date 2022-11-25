@@ -46,10 +46,10 @@ def get_repositories(repos) -> List[dict]:
             repositoryNames= repos,
         )
         # get rid of javascript date format
-        to_string = json.dumps(response, indent=2, default=str)
-        to_dict = json.loads(to_string)
+        json_string = json.dumps(response, indent=2, default=str)
+        json_dict = json.loads(json_string)
        
-        return to_dict
+        return json_dict
     except ClientError as error:
         if error.response['Error']['Code'] == 'RepositoryNotFoundException':
             logger.exception(error.response['Error']['Message'])
@@ -81,4 +81,5 @@ def populate_env_file(repositories: List[dict]) -> None:
 
 if __name__ == '__main__':
     repositories = get_repositories(gen_repo_names())
+    
     populate_env_file(repositories)

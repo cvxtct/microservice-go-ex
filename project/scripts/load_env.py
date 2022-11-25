@@ -81,5 +81,4 @@ def populate_env_file(repositories: List[dict]) -> None:
 
 if __name__ == '__main__':
     repositories = get_repositories(gen_repo_names())
-    
     populate_env_file(repositories)

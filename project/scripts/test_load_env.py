@@ -1,9 +1,4 @@
-import os 
-import pathlib
 from unittest.mock import patch
-import botocore
-import datetime
-import tzlocal
 import json
 from botocore.session import Session
 from botocore.stub import Stubber

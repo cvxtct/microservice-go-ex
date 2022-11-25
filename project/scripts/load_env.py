@@ -3,7 +3,6 @@ import pathlib
 import re
 import boto3
 import logging
-import time
 import json
 from typing import List
 from botocore.exceptions import ClientError
@@ -38,7 +37,6 @@ def gen_repo_names() -> None:
 
 
 def get_repositories(repos) -> List[dict]:
-    
     """Acquire info from aws ecr"""
     try:
         response = ecr.describe_repositories(

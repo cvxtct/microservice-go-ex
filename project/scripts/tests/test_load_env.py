@@ -8,12 +8,12 @@ session = Session()
 STS_CLIENT = session.create_client('sts')
 ECR_CLIENT = session.create_client('ecr')
 
-f = open('./responses/sts_get_caller_identity_response.json')
+f = open('./tests/responses/sts_get_caller_identity_response.json')
 sts_get_caller_identity_response = json.load(f)
 
 sts_get_caller_account_id = sts_get_caller_identity_response["Account"]
 
-f = open('./responses/ecr_repositories_response.json')
+f = open('./tests/responses/ecr_repositories_response.json')
 ecr_repositories = json.load(f)
 
 

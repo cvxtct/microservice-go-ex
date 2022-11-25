@@ -1,0 +1,105 @@
+{
+    "repositories": [
+      {
+        "repositoryArn": "arn:aws:ecr:eu-central-1:121461003200:repository/experiment/logger-service",
+        "registryId": "121461003200",
+        "repositoryName": "experiment/logger-service",
+        "repositoryUri": "121461003200.dkr.ecr.eu-central-1.amazonaws.com/experiment/logger-service",
+        "createdAt": "2022-11-13 08:04:47+01:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+          "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+          "encryptionType": "KMS",
+          "kmsKey": "arn:aws:kms:eu-central-1:121461003200:key/5b035b24-a805-4006-ac9e-70c6b1dd63d0"
+        }
+      },
+      {
+        "repositoryArn": "arn:aws:ecr:eu-central-1:121461003200:repository/experiment/broker-service",
+        "registryId": "121461003200",
+        "repositoryName": "experiment/broker-service",
+        "repositoryUri": "121461003200.dkr.ecr.eu-central-1.amazonaws.com/experiment/broker-service",
+        "createdAt": "2022-11-13 08:01:39+01:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+          "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+          "encryptionType": "KMS",
+          "kmsKey": "arn:aws:kms:eu-central-1:121461003200:key/5b035b24-a805-4006-ac9e-70c6b1dd63d0"
+        }
+      },
+      {
+        "repositoryArn": "arn:aws:ecr:eu-central-1:121461003200:repository/experiment/mailer-service",
+        "registryId": "121461003200",
+        "repositoryName": "experiment/mailer-service",
+        "repositoryUri": "121461003200.dkr.ecr.eu-central-1.amazonaws.com/experiment/mailer-service",
+        "createdAt": "2022-11-13 08:04:47+01:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+          "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+          "encryptionType": "KMS",
+          "kmsKey": "arn:aws:kms:eu-central-1:121461003200:key/5b035b24-a805-4006-ac9e-70c6b1dd63d0"
+        }
+      },
+      {
+        "repositoryArn": "arn:aws:ecr:eu-central-1:121461003200:repository/experiment/authentication-service",
+        "registryId": "121461003200",
+        "repositoryName": "experiment/authentication-service",
+        "repositoryUri": "121461003200.dkr.ecr.eu-central-1.amazonaws.com/experiment/authentication-service",
+        "createdAt": "2022-11-13 08:04:47+01:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+          "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+          "encryptionType": "KMS",
+          "kmsKey": "arn:aws:kms:eu-central-1:121461003200:key/5b035b24-a805-4006-ac9e-70c6b1dd63d0"
+        }
+      },
+      {
+        "repositoryArn": "arn:aws:ecr:eu-central-1:121461003200:repository/experiment/listener-service",
+        "registryId": "121461003200",
+        "repositoryName": "experiment/listener-service",
+        "repositoryUri": "121461003200.dkr.ecr.eu-central-1.amazonaws.com/experiment/listener-service",
+        "createdAt": "2022-11-13 08:04:47+01:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+          "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+          "encryptionType": "KMS",
+          "kmsKey": "arn:aws:kms:eu-central-1:121461003200:key/5b035b24-a805-4006-ac9e-70c6b1dd63d0"
+        }
+      },
+      {
+        "repositoryArn": "arn:aws:ecr:eu-central-1:121461003200:repository/experiment/front-end",
+        "registryId": "121461003200",
+        "repositoryName": "experiment/front-end",
+        "repositoryUri": "121461003200.dkr.ecr.eu-central-1.amazonaws.com/experiment/front-end",
+        "createdAt": "2022-11-13 08:04:47+01:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+          "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+          "encryptionType": "KMS",
+          "kmsKey": "arn:aws:kms:eu-central-1:121461003200:key/5b035b24-a805-4006-ac9e-70c6b1dd63d0"
+        }
+      }
+    ],
+    "ResponseMetadata": {
+      "RequestId": "0fda1da3-e580-4809-bd83-67e87598a0f8",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "0fda1da3-e580-4809-bd83-67e87598a0f8",
+        "date": "Fri, 25 Nov 2022 14:33:42 GMT",
+        "content-type": "application/x-amz-json-1.1",
+        "content-length": "3087"
+      },
+      "RetryAttempts": 0
+    }
+  }

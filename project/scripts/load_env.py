@@ -4,6 +4,7 @@ import re
 import boto3
 import logging
 import time
+import json
 from typing import List
 from botocore.exceptions import ClientError
 
@@ -11,36 +12,44 @@ from botocore.exceptions import ClientError
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-# Set session and client
-session = boto3.session.Session(profile_name='default')
-ecr = session.client('ecr', region_name='eu-central-1')
 
-# Get account id
-account_id = boto3.client('sts').get_caller_identity().get('Account')
+def get_sts_client():
+    return boto3.client('sts')
 
-# Paths
-root_path = str(pathlib.Path(__file__).parents[2])
-project_path = str(pathlib.Path(__file__).parents[1])
+def get_identity():
+    return get_sts_client().get_caller_identity()
 
-repos = []
+def get_ecr_client():
+    session = boto3.session.Session(profile_name='default')
+    return session.client('ecr', region_name='eu-central-1') 
+
+ecr = get_ecr_client()
 
 def gen_repo_names() -> None:
     """Make docker repository name from project folder names"""
-
+    repos = []
+    root_path = str(pathlib.Path(__file__).parents[2])
     for _, dirs, _ in os.walk(root_path):
         for dir in dirs:
                 if '-service' in str(dir) or 'front-end' in str(dir):
-                    repos.append('experiment' + '/' + str(dir))   
+                    repos.append('experiment' + '/' + str(dir)) 
+    
+    return repos
 
 
-def get_repositories() -> List[dict]:
+def get_repositories(repos) -> List[dict]:
+    
     """Acquire info from aws ecr"""
     try:
         response = ecr.describe_repositories(
-            registryId = account_id,
+            registryId = get_identity()["Account"],
             repositoryNames= repos,
         )
-        return response['repositories']
+        # get rid of javascript date format
+        to_string = json.dumps(response, indent=2, default=str)
+        to_dict = json.loads(to_string)
+       
+        return to_dict
     except ClientError as error:
         if error.response['Error']['Code'] == 'RepositoryNotFoundException':
             logger.exception(error.response['Error']['Message'])
@@ -52,15 +61,14 @@ def get_repositories() -> List[dict]:
 
 def create_env_var_name(repo_uri: str) -> str:
     """Generate environment variable name from the docker repository name"""
-
     return re.sub('-', '_', re.split(r"[\./]", repo_uri)[-1:][0].upper())
     
 
 def populate_env_file(repositories: List[dict]) -> None:
     """Populate .env file with environment variables for the swarm config"""
-
+    project_path = str(pathlib.Path(__file__).parents[1])
     if repositories:
-        repo_uris = [[v for k, v in repo.items() if k == 'repositoryUri'] for repo in repositories]
+        repo_uris = [[v for k, v in repo.items() if k == 'repositoryUri'] for repo in repositories['repositories']]
         with open(project_path + '/' + '.env', 'w') as f:
             for uri in repo_uris:
                 f.write(create_env_var_name(uri[0]) + '=' + uri[0] + '\n')
@@ -72,6 +80,5 @@ def populate_env_file(repositories: List[dict]) -> None:
 
 
 if __name__ == '__main__':
-    gen_repo_names()
-    repositories = get_repositories()
+    repositories = get_repositories(gen_repo_names())
     populate_env_file(repositories)
